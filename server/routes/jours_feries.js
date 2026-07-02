@@ -17,7 +17,7 @@ router.post('/', (req, res) => {
 
 router.put('/:id', (req, res) => {
   const { date, libelle } = req.body
-  if (!date || !libelle) return res.status(400).json({ error: 'date et libelle requis' })
+  if (!date || !libelle) return res.status(400).json({ error: 'date et libellé requis' })
   const info = db.prepare('UPDATE jours_feries SET date = ?, libelle = ? WHERE id = ?').run(date, libelle, req.params.id)
   if (info.changes === 0) return res.status(404).json({ error: 'Jour férié introuvable' })
   res.json({ id: Number(req.params.id), date, libelle })

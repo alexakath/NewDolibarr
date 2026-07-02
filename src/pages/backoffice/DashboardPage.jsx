@@ -124,20 +124,18 @@ export default function DashboardPage() {
         setGenderData(gender)
 
         const rows = []
-        for (const p of payments) {
-          const salary = salaryMap[p.fk_salary]
-          if (!salary) continue
+        for (const salary of salaries) {
           const user = userMap[salary.fk_user]
           if (!user || user.admin === '1') continue
 
-          const d = parseDateVal(p.datep || p.datepaye)
+          const d = parseDateVal(salary.datesp)
           if (d) {
             rows.push({
               date: d,
               month: d.getMonth(),
               year: d.getFullYear(),
               employeeName: [user.lastname, user.firstname].filter(Boolean).join(' '),
-              amount: parseFloat(p.amount) || 0,
+              amount: parseFloat(salary.amount) || 0,
             })
           }
         }
@@ -217,7 +215,7 @@ export default function DashboardPage() {
       {/* Salaires réglés par mois */}
       <div style={card}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
-          <h2 style={{ margin: 0 }}>Règlements par mois</h2>
+          <h2 style={{ margin: 0 }}>Salaires par mois</h2>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             <select value={monthFilter} onChange={(e) => setMonthFilter(e.target.value)} style={filterSelect}>
               <option value="">Tous les mois</option>
@@ -238,9 +236,9 @@ export default function DashboardPage() {
           <table>
             <thead>
               <tr>
-                <th>Date de règlement</th>
+                <th>Date début salaire</th>
                 <th>Employé</th>
-                <th style={{ textAlign: 'right' }}>Salaire réglé</th>
+                <th style={{ textAlign: 'right' }}>Montant</th>
               </tr>
             </thead>
             <tbody>

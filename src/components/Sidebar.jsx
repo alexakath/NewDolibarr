@@ -1,5 +1,5 @@
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { FiUsers, FiDollarSign, FiPlusCircle, FiBarChart2, FiUpload, FiRefreshCw, FiLogOut, FiArrowRight, FiUser } from 'react-icons/fi'
+import { FiUsers, FiDollarSign, FiPlusCircle, FiBarChart2, FiUpload, FiRefreshCw, FiLogOut, FiArrowRight, FiUser, FiCalendar, FiZap } from 'react-icons/fi'
 
 const sidebarStyle = {
   width: '240px',
@@ -107,6 +107,7 @@ export function FrontSidebar() {
       <SideLink to="/employees" icon={FiUsers}>Salariés</SideLink>
       <SideLink to="/salaries" icon={FiDollarSign}>Salaires</SideLink>
       <SideLink to="/salaries/create" icon={FiPlusCircle}>Gestion salaires</SideLink>
+      <SideLink to="/salaries/bulk" icon={FiZap}>Salaires collectifs</SideLink>
 
       <div style={{ flex: 1 }} />
 
@@ -143,6 +144,7 @@ export function BackSidebar() {
       <SideLink to="/backoffice/dashboard" icon={FiBarChart2}>Dashboard</SideLink>
       <SideLink to="/backoffice/import" icon={FiUpload}>Import</SideLink>
       <SideLink to="/backoffice/reset" icon={FiRefreshCw}>Réinitialisation</SideLink>
+      <SideLink to="/backoffice/jours-feries" icon={FiCalendar}>Jours fériés</SideLink>
 
       <div style={{ flex: 1 }} />
 

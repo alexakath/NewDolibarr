@@ -1,5 +1,5 @@
 import { apiFetch } from '../api/dolibarr'
-import { syncToSQLite, clearSQLite, backendFetch } from '../api/backend'
+import { syncToSQLite, clearSQLite, clearJoursFeries, backendFetch } from '../api/backend'
 
 export async function syncEmployees() {
   const users = await apiFetch('/users')
@@ -23,15 +23,17 @@ export async function syncAll() {
 }
 
 export async function resetSQLite() {
-  const [emp, sal, hist] = await Promise.all([
+  const [emp, sal, hist, jf] = await Promise.all([
     clearSQLite('employees'),
     clearSQLite('salaries'),
     clearSQLite('import_history'),
+    clearJoursFeries(),
   ])
   return {
     employees: emp.deleted || 0,
     salaries: sal.deleted || 0,
     import_history: hist.deleted || 0,
+    jours_feries: jf.deleted || 0,
   }
 }
 

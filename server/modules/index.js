@@ -11,11 +11,12 @@ const MODULES = {
         login         TEXT,
         ref_employee  TEXT,
         weeklyhours   REAL,
+        poste         TEXT,
         data_json     TEXT,
         synced_at     TEXT DEFAULT (datetime('now'))
       )
     `,
-    columns: ['id', 'lastname', 'firstname', 'gender', 'login', 'ref_employee', 'weeklyhours', 'data_json'],
+    columns: ['id', 'lastname', 'firstname', 'gender', 'login', 'ref_employee', 'weeklyhours', 'poste', 'data_json'],
     mapRow: (u) => ({
       id:           Number(u.id),
       lastname:     u.lastname ?? null,
@@ -24,6 +25,7 @@ const MODULES = {
       login:        u.login ?? null,
       ref_employee: u.ref_employee ?? null,
       weeklyhours:  u.weeklyhours ? Number(u.weeklyhours) : null,
+      poste:        u.job ?? u.poste ?? null,
       data_json:    JSON.stringify(u),
     }),
   },
@@ -76,6 +78,18 @@ const MODULES = {
         key        TEXT PRIMARY KEY,
         value      TEXT NOT NULL,
         updated_at TEXT DEFAULT (datetime('now'))
+      )
+    `,
+  },
+
+  jours_feries: {
+    orderBy: 'date ASC',
+    schema: `
+      CREATE TABLE IF NOT EXISTS jours_feries (
+        id         INTEGER PRIMARY KEY AUTOINCREMENT,
+        date       TEXT NOT NULL,
+        libelle    TEXT NOT NULL,
+        created_at TEXT DEFAULT (datetime('now'))
       )
     `,
   },

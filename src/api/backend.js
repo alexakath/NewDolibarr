@@ -51,3 +51,23 @@ export function checkAuthCode(code) {
 export function logImport(type, count, errors) {
   return backendFetch('/import_history', { method: 'POST', body: { type, count, errors } })
 }
+
+export function getJoursFeries() {
+  return backendFetch('/jours-feries')
+}
+
+export function createJourFerie(date, libelle) {
+  return backendFetch('/jours-feries', { method: 'POST', body: { date, libelle } })
+}
+
+export function updateJourFerie(id, date, libelle) {
+  return backendFetch(`/jours-feries/${id}`, { method: 'PUT', body: { date, libelle } })
+}
+
+export function deleteJourFerie(id) {
+  return backendFetch(`/jours-feries/${id}`, { method: 'DELETE' })
+}
+
+export function clearJoursFeries() {
+  return backendFetch('/jours-feries', { method: 'DELETE' })
+}

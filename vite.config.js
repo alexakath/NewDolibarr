@@ -7,14 +7,14 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost/dolibarr/htdocs/api/index.php',
+        target: 'http://localhost',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
+        rewrite: (path) => path.replace(/^\/api/, '/dolibarr/htdocs/api/index.php'),
       },
       '/custom-api': {
-        target: 'http://localhost/dolibarr/htdocs/api/custom_reset.php',
+        target: 'http://localhost',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/custom-api/, ''),
+        rewrite: (path) => path.replace(/^\/custom-api/, '/dolibarr/htdocs/api/custom_reset.php'),
       },
       '/backend/api': {
         target: 'http://localhost:3001',

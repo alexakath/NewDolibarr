@@ -28,8 +28,9 @@ export async function getSalariesWithDetails() {
     return {
       ...salary,
       employeeName: [user.lastname, user.firstname].filter(Boolean).join(' ') || '-',
-      employeeGender: user.gender || '-',
-      employeeRef: user.ref_employee || user.id,
+      employeeGender: user.gender || '',
+      employeeRef: user.ref_employee || String(user.id || ''),
+      employeeJob: user.job || '',
       payments: salaryPayments,
       totalPaid,
     }

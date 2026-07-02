@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
 
 router.post('/', (req, res) => {
   const { date, libelle } = req.body
-  if (!date || !libelle) return res.status(400).json({ error: 'date et libelle requis' })
+  if (!date || !libelle) return res.status(400).json({ error: 'date et libellé requis' })
   const info = db.prepare('INSERT INTO jours_feries (date, libelle) VALUES (?, ?)').run(date, libelle)
   res.status(201).json({ id: info.lastInsertRowid, date, libelle })
 })

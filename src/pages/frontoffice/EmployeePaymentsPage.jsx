@@ -124,7 +124,7 @@ export default function EmployeePaymentsPage() {
           <div>
             <span style={{ fontSize: '0.7rem', color: '#4a5568', textTransform: 'uppercase', letterSpacing: '1px' }}>Genre</span>
             <div style={{ marginTop: '0.2rem' }}>
-              <span style={{ display: 'inline-block', padding: '0.15rem 0.6rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '500', background: employee?.gender === 'man' ? '#3b82f615' : '#ec489915', color: employee?.gender === 'man' ? '#3b82f6' : '#ec4899' }}>
+              <span style={{ display: 'inline-block', padding: '0.15rem 0.6rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '500', background: employee?.gender === 'man' ? '#3b82f615' : employee?.gender === 'woman' ? '#ec489915' : '#ffffff10', color: employee?.gender === 'man' ? '#3b82f6' : employee?.gender === 'woman' ? '#ec4899' : '#64748b' }}>
                 {employee?.gender === 'man' ? 'Homme' : employee?.gender === 'woman' ? 'Femme' : '-'}
               </span>
             </div>

@@ -1,6 +1,5 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { FiSearch, FiX } from 'react-icons/fi'
 import { getUsers } from '../../services/userService'
 
 const card = {
@@ -8,17 +7,6 @@ const card = {
   borderRadius: '12px',
   padding: '1.5rem',
   border: '1px solid #1e1e2e',
-}
-
-const filterInput = {
-  width: '100%',
-  padding: '0.5rem 0.75rem',
-  background: '#0f0f1a',
-  border: '1px solid #2d3748',
-  borderRadius: '8px',
-  color: '#e2e8f0',
-  fontSize: '0.85rem',
-  outline: 'none',
 }
 
 const badgeStyle = (color) => ({
@@ -36,13 +24,6 @@ export default function EmployeeListPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const [filters, setFilters] = useState({
-    ref: '',
-    nom: '',
-    genre: '',
-    login: '',
-  })
-
   useEffect(() => {
     getUsers()
       .then((users) => {
@@ -51,29 +32,6 @@ export default function EmployeeListPage() {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false))
   }, [])
-
-  const filtered = useMemo(() => {
-    return employees.filter((emp) => {
-      if (filters.ref && !String(emp.ref_employee || emp.id).includes(filters.ref)) return false
-      if (filters.nom && !`${emp.lastname} ${emp.firstname}`.toLowerCase().includes(filters.nom.toLowerCase())) return false
-      if (filters.genre) {
-        if (filters.genre === 'man' && emp.gender !== 'man') return false
-        if (filters.genre === 'woman' && emp.gender !== 'woman') return false
-      }
-      if (filters.login && !emp.login.toLowerCase().includes(filters.login.toLowerCase())) return false
-      return true
-    })
-  }, [employees, filters])
-
-  const hasFilters = Object.values(filters).some(v => v !== '')
-
-  function updateFilter(key, value) {
-    setFilters((prev) => ({ ...prev, [key]: value }))
-  }
-
-  function resetFilters() {
-    setFilters({ ref: '', nom: '', genre: '', login: '' })
-  }
 
   if (loading) return <p>Chargement...</p>
   if (error) return <p style={{ color: 'var(--danger)' }}>Erreur : {error}</p>
@@ -90,51 +48,6 @@ export default function EmployeeListPage() {
         </div>
       </div>
 
-      {/* Filtres */}
-      <div style={{ ...card, marginBottom: '1.5rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#4a5568', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: '600' }}>
-            <FiSearch size={14} />
-            Recherche multi-critères
-          </div>
-          {hasFilters && (
-            <button onClick={resetFilters} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', background: 'none', border: '1px solid #2d3748', borderRadius: '6px', color: '#94a3b8', padding: '0.3rem 0.75rem', fontSize: '0.8rem', cursor: 'pointer' }}>
-              <FiX size={14} />
-              Effacer
-            </button>
-          )}
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.75rem' }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.3rem' }}>Réf</label>
-            <input style={filterInput} value={filters.ref} onChange={(e) => updateFilter('ref', e.target.value)} placeholder="Ex: 1" />
-          </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.3rem' }}>Nom</label>
-            <input style={filterInput} value={filters.nom} onChange={(e) => updateFilter('nom', e.target.value)} placeholder="Rechercher..." />
-          </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.3rem' }}>Genre</label>
-            <select style={filterInput} value={filters.genre} onChange={(e) => updateFilter('genre', e.target.value)}>
-              <option value="">Tous</option>
-              <option value="man">Homme</option>
-              <option value="woman">Femme</option>
-            </select>
-          </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '0.3rem' }}>Login</label>
-            <input style={filterInput} value={filters.login} onChange={(e) => updateFilter('login', e.target.value)} placeholder="Rechercher..." />
-          </div>
-        </div>
-      </div>
-
-      {/* Résultat */}
-      <div style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '0.75rem' }}>
-        {filtered.length} résultat{filtered.length > 1 ? 's' : ''}
-        {hasFilters && ` (filtré${filtered.length > 1 ? 's' : ''})`}
-      </div>
-
-      {/* Tableau */}
       <div style={card}>
         <table>
           <thead>
@@ -143,12 +56,13 @@ export default function EmployeeListPage() {
               <th>Réf</th>
               <th>Nom</th>
               <th>Genre</th>
+              <th>Poste</th>
               <th>Login</th>
               <th>Heures/sem.</th>
             </tr>
           </thead>
           <tbody>
-            {filtered.map((emp) => (
+            {employees.map((emp) => (
               <tr key={emp.id}>
                 <td>
                   <img
@@ -169,6 +83,7 @@ export default function EmployeeListPage() {
                     {emp.gender === 'man' ? 'Homme' : emp.gender === 'woman' ? 'Femme' : '-'}
                   </span>
                 </td>
+                <td style={{ color: '#94a3b8', fontSize: '0.85rem' }}>{emp.job || '-'}</td>
                 <td><code style={{ fontSize: '0.85rem', color: '#94a3b8', background: '#0f0f1a', padding: '0.15rem 0.5rem', borderRadius: '4px' }}>{emp.login}</code></td>
                 <td>{emp.weeklyhours ? parseFloat(emp.weeklyhours) + 'h' : '-'}</td>
               </tr>

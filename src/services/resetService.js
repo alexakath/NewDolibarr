@@ -1,4 +1,5 @@
 import { apiFetch } from '../api/dolibarr'
+import { getJoursFeries } from '../api/backend'
 import { resetSQLite, resetImages } from './syncService'
 
 const DOLAPIKEY = import.meta.env.VITE_DOLAPIKEY
@@ -21,6 +22,13 @@ export async function getResetStats() {
     stats.employees = { label: 'Employés', count: employees.length }
   } catch {
     stats.employees = { label: 'Employés', count: 0 }
+  }
+
+  try {
+    const jf = await getJoursFeries()
+    stats.jours_feries = { label: 'Jours fériés', count: jf.length }
+  } catch {
+    stats.jours_feries = { label: 'Jours fériés', count: 0 }
   }
 
   return stats
@@ -110,8 +118,10 @@ export async function runReset(onProgress) {
     const sqliteResult = await resetSQLite()
     const total = sqliteResult.employees + sqliteResult.salaries + sqliteResult.import_history
     report.sqlite = { success: total, errors: [] }
+    report.jours_feries = { success: sqliteResult.jours_feries || 0, errors: [] }
   } catch (err) {
     report.sqlite = { success: 0, errors: [{ id: '-', message: err.message }] }
+    report.jours_feries = { success: 0, errors: [{ id: '-', message: err.message }] }
   }
   onProgress?.('sqlite', 'SQLite nettoyé', 100)
 

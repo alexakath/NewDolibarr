@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { FiTrash2, FiAlertTriangle, FiCheckCircle, FiXCircle, FiDollarSign, FiUsers, FiImage, FiDatabase } from 'react-icons/fi'
+import { FiTrash2, FiAlertTriangle, FiCheckCircle, FiXCircle, FiDollarSign, FiUsers, FiImage, FiDatabase, FiCalendar } from 'react-icons/fi'
 import { getResetStats, runReset } from '../../services/resetService'
 
 const card = {
@@ -26,6 +26,7 @@ const MODULE_META = {
   employees: { icon: FiUsers, color: '#3b82f6' },
   images: { icon: FiImage, color: '#f59e0b' },
   sqlite: { icon: FiDatabase, color: '#10b981' },
+  jours_feries: { icon: FiCalendar, color: '#06b6d4' },
 }
 
 export default function ResetPage() {
@@ -202,7 +203,8 @@ export default function ResetPage() {
               color="#10b981"
               icon={FiDatabase}
               items={[
-                { label: 'SQLite', data: report.sqlite },
+                { label: 'SQLite (employés, salaires, historique)', data: report.sqlite },
+                { label: 'Jours fériés', data: report.jours_feries },
               ]}
             />
           </div>

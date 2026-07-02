@@ -152,6 +152,9 @@ async function importEmployees(rows, registry, onProgress) {
       const heures = getCi(row, 'heure_travail_semaine')
       if (heures) body.weeklyhours = parseCsvFloat(heures)
 
+      const poste = getCi(row, 'poste')
+      if (poste) body.job = poste
+
       const created = await apiFetch('/users', { method: 'POST', body })
       const id = typeof created === 'object' ? created.id : created
       registry.set('employees', ref, { id: Number(id) })

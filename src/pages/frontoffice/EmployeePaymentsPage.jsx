@@ -91,24 +91,44 @@ export default function EmployeePaymentsPage() {
       </div>
 
       {/* Fiche employé */}
-      <div style={{ ...card, display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-        <img
-          src={`/backend/api/photos/${employee?.ref_employee || employee?.id}`}
-          alt={employee?.lastname}
-          style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #1e1e2e' }}
-          onError={(e) => { e.target.style.display = 'none' }}
-        />
-        <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: '600', color: '#f1f5f9', fontSize: '1.1rem' }}>{employee?.lastname} {employee?.firstname}</div>
-          <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Réf: {employee?.ref_employee || employee?.id} · Login: {employee?.login}</div>
+      <div style={{ ...card, marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+          <img
+            src={`/backend/api/photos/${employee?.ref_employee || employee?.id}`}
+            alt={employee?.lastname}
+            style={{ width: '56px', height: '56px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #1e1e2e' }}
+            onError={(e) => { e.target.style.display = 'none' }}
+          />
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: '700', color: '#f1f5f9', fontSize: '1.15rem' }}>{employee?.lastname} {employee?.firstname}</div>
+            <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.2rem' }}>Réf: {employee?.ref_employee || employee?.id} · Login: {employee?.login}</div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Total salaires</div>
+            <div style={{ fontSize: '1.2rem', fontWeight: '700', color: '#f1f5f9' }}>{formatAmount(totalSalary)}</div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Total réglé</div>
+            <div style={{ fontSize: '1.2rem', fontWeight: '700', color: '#4ade80' }}>{formatAmount(totalPaidAll)}</div>
+          </div>
         </div>
-        <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Total salaires</div>
-          <div style={{ fontSize: '1.2rem', fontWeight: '700', color: '#f1f5f9' }}>{formatAmount(totalSalary)}</div>
-        </div>
-        <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Total réglé</div>
-          <div style={{ fontSize: '1.2rem', fontWeight: '700', color: '#4ade80' }}>{formatAmount(totalPaidAll)}</div>
+        <div style={{ display: 'flex', gap: '1.5rem', borderTop: '1px solid #1e1e2e', paddingTop: '0.85rem' }}>
+          <div>
+            <span style={{ fontSize: '0.7rem', color: '#4a5568', textTransform: 'uppercase', letterSpacing: '1px' }}>Poste</span>
+            <div style={{ color: '#94a3b8', fontSize: '0.9rem', marginTop: '0.2rem' }}>{employee?.job || '-'}</div>
+          </div>
+          <div>
+            <span style={{ fontSize: '0.7rem', color: '#4a5568', textTransform: 'uppercase', letterSpacing: '1px' }}>Heures / semaine</span>
+            <div style={{ color: '#94a3b8', fontSize: '0.9rem', marginTop: '0.2rem' }}>{employee?.weeklyhours ? parseFloat(employee.weeklyhours) + 'h' : '-'}</div>
+          </div>
+          <div>
+            <span style={{ fontSize: '0.7rem', color: '#4a5568', textTransform: 'uppercase', letterSpacing: '1px' }}>Genre</span>
+            <div style={{ marginTop: '0.2rem' }}>
+              <span style={{ display: 'inline-block', padding: '0.15rem 0.6rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '500', background: employee?.gender === 'man' ? '#3b82f615' : employee?.gender === 'woman' ? '#ec489915' : '#ffffff10', color: employee?.gender === 'man' ? '#3b82f6' : employee?.gender === 'woman' ? '#ec4899' : '#64748b' }}>
+                {employee?.gender === 'man' ? 'Homme' : employee?.gender === 'woman' ? 'Femme' : '-'}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 

@@ -56,7 +56,7 @@ export default function SalaryPage() {
   const navigate = useNavigate()
 
   const [filters, setFilters] = useState({
-    ref: '', employee: '', status: '', amountMin: '', amountMax: '', dateFrom: '', dateTo: '',
+    employeeRef: '', employee: '', poste: '', genre: '', status: '', amountMin: '', amountMax: '', dateFrom: '', dateTo: '',
   })
 
   useEffect(() => {
@@ -68,8 +68,10 @@ export default function SalaryPage() {
 
   const filtered = useMemo(() => {
     return salaries.filter((s) => {
-      if (filters.ref && !extractRef(s.label).includes(filters.ref)) return false
+      if (filters.employeeRef && !String(s.employeeRef).includes(filters.employeeRef)) return false
       if (filters.employee && !s.employeeName.toLowerCase().includes(filters.employee.toLowerCase())) return false
+      if (filters.poste && !(s.employeeJob || '').toLowerCase().includes(filters.poste.toLowerCase())) return false
+      if (filters.genre && s.employeeGender !== filters.genre) return false
       if (filters.status && getStatus(s).value !== filters.status) return false
       const amount = parseFloat(s.amount) || 0
       if (filters.amountMin && amount < parseFloat(filters.amountMin)) return false
@@ -83,7 +85,7 @@ export default function SalaryPage() {
   const hasFilters = Object.values(filters).some(v => v !== '')
 
   function updateFilter(key, value) { setFilters((prev) => ({ ...prev, [key]: value })) }
-  function resetFilters() { setFilters({ ref: '', employee: '', status: '', amountMin: '', amountMax: '', dateFrom: '', dateTo: '' }) }
+  function resetFilters() { setFilters({ employeeRef: '', employee: '', poste: '', genre: '', status: '', amountMin: '', amountMax: '', dateFrom: '', dateTo: '' }) }
 
   if (loading) return <p>Chargement...</p>
   if (error) return <p style={{ color: 'var(--danger)' }}>Erreur : {error}</p>
@@ -124,12 +126,24 @@ export default function SalaryPage() {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.75rem' }}>
           <div>
-            <label style={{ display: 'block', marginBottom: '0.3rem' }}>Réf</label>
-            <input style={filterInput} value={filters.ref} onChange={(e) => updateFilter('ref', e.target.value)} placeholder="Ex: 1" />
+            <label style={{ display: 'block', marginBottom: '0.3rem' }}>Réf employé</label>
+            <input style={filterInput} value={filters.employeeRef} onChange={(e) => updateFilter('employeeRef', e.target.value)} placeholder="Ex: 1" />
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '0.3rem' }}>Employé</label>
             <input style={filterInput} value={filters.employee} onChange={(e) => updateFilter('employee', e.target.value)} placeholder="Rechercher..." />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.3rem' }}>Poste</label>
+            <input style={filterInput} value={filters.poste} onChange={(e) => updateFilter('poste', e.target.value)} placeholder="Ex: Comptable" />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.3rem' }}>Genre</label>
+            <select style={filterInput} value={filters.genre} onChange={(e) => updateFilter('genre', e.target.value)}>
+              <option value="">Tous</option>
+              <option value="man">Homme</option>
+              <option value="woman">Femme</option>
+            </select>
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '0.3rem' }}>Statut</label>
@@ -172,6 +186,8 @@ export default function SalaryPage() {
             <tr>
               <th>Réf</th>
               <th>Employé</th>
+              <th>Poste</th>
+              <th>Genre</th>
               <th>Montant</th>
               <th>Période</th>
               <th>Statut</th>
@@ -185,6 +201,12 @@ export default function SalaryPage() {
                 <tr key={s.id}>
                   <td style={{ color: '#64748b' }}>#{extractRef(s.label)}</td>
                   <td style={{ fontWeight: '500', color: '#f1f5f9' }}>{s.employeeName}</td>
+                  <td style={{ color: '#94a3b8', fontSize: '0.85rem' }}>{s.employeeJob || '-'}</td>
+                  <td>
+                    <span style={{ display: 'inline-block', padding: '0.15rem 0.6rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '500', background: s.employeeGender === 'man' ? '#3b82f615' : s.employeeGender === 'woman' ? '#ec489915' : '#ffffff10', color: s.employeeGender === 'man' ? '#3b82f6' : s.employeeGender === 'woman' ? '#ec4899' : '#64748b' }}>
+                      {s.employeeGender === 'man' ? 'Homme' : s.employeeGender === 'woman' ? 'Femme' : '-'}
+                    </span>
+                  </td>
                   <td style={{ fontWeight: '600' }}>{parseFloat(s.amount).toLocaleString('fr-FR', { minimumFractionDigits: 2 })}</td>
                   <td style={{ fontSize: '0.85rem', color: '#94a3b8' }}>{formatDate(s.datesp)} → {formatDate(s.dateep)}</td>
                   <td>

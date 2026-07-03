@@ -2,8 +2,6 @@ import { apiFetch } from '../api/dolibarr'
 import { getJoursFeries } from '../api/backend'
 import { resetSQLite, resetImages } from './syncService'
 
-const DOLAPIKEY = import.meta.env.VITE_DOLAPIKEY
-
 // ─── Stats ────────────────────────────────────────────────────────────────────
 
 export async function getResetStats() {
@@ -34,20 +32,57 @@ export async function getResetStats() {
   return stats
 }
 
-// ─── Suppression salaires (via script PHP custom) ─────────────────────────────
+// ─── Suppression salaires (via API Dolibarr) ──────────────────────────────────
 
-async function deleteSalaries() {
-  const response = await fetch('/custom-api?action=reset_salaries', {
-    method: 'POST',
-    headers: { 'DOLAPIKEY': DOLAPIKEY },
-  })
+async function deleteSalaries(onProgress) {
+  const results = { success: 0, errors: [] }
 
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({}))
-    throw new Error(err.error || `Erreur ${response.status}`)
+  let salaries, allPayments
+  try {
+    [salaries, allPayments] = await Promise.all([
+      apiFetch('/salaries'),
+      apiFetch('/salaries/payments').catch(() => []),
+    ])
+  } catch {
+    return results
   }
 
-  return response.json()
+  const paymentsBySalary = {}
+  for (const p of allPayments) {
+    const sid = String(p.fk_salary)
+    if (!paymentsBySalary[sid]) paymentsBySalary[sid] = []
+    paymentsBySalary[sid].push(p)
+  }
+
+  for (let i = 0; i < salaries.length; i++) {
+    const salary = salaries[i]
+    const payments = paymentsBySalary[String(salary.id)] || []
+
+    for (const payment of payments) {
+      try {
+        await apiFetch(`/salaries/${payment.id}/payments`, { method: 'DELETE' })
+      } catch (err) {
+        if (!err.message.includes('404')) {
+          results.errors.push({ id: `paiement#${payment.id}`, message: err.message })
+        }
+      }
+    }
+
+    try {
+      await apiFetch(`/salaries/${salary.id}`, { method: 'DELETE' })
+      results.success++
+    } catch (err) {
+      if (err.message.includes('404')) {
+        results.success++
+      } else {
+        results.errors.push({ id: salary.id, message: err.message })
+      }
+    }
+
+    onProgress?.(Math.round(((i + 1) / salaries.length) * 100), results)
+  }
+
+  return results
 }
 
 // ─── Suppression employés (via API Dolibarr) ──────────────────────────────────
@@ -86,17 +121,9 @@ export async function runReset(onProgress) {
   const report = {}
 
   onProgress?.('salaries', 'Suppression des salaires...', 0)
-  let salaryCount = 0
-  try {
-    const salaries = await apiFetch('/salaries')
-    salaryCount = salaries.length
-  } catch {}
-  try {
-    await deleteSalaries()
-    report.salaries = { success: salaryCount, errors: [] }
-  } catch (err) {
-    report.salaries = { success: 0, errors: [{ id: '-', message: err.message }] }
-  }
+  report.salaries = await deleteSalaries((pct, results) => {
+    onProgress?.('salaries', `Suppression des salaires... ${pct}%`, pct, results)
+  })
   onProgress?.('salaries', 'Salaires supprimés', 100)
 
   onProgress?.('employees', 'Suppression des employés...', 0)

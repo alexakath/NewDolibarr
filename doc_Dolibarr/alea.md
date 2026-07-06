@@ -7,3 +7,16 @@ dia raha misy jour ferie ao anatiny de apina ny pourcentage ao ny salaire par jo
 intervalle + somme montant rehetra any amin'ny base
 montant misaraka par jour fa mila averina montant total ray (manisa andro * salaire par jour de + poucentage raha jour férié) 
 atao copie colle le page genere salaire satria meme filtre de generation en masse fona ihany fa page vaovao no hanaovana anle generation salaire par jour
+
+
+manambotra page vaovao mgenerer paiement dia mitovy filtre amin'ny filtre salaires:genre, poste, heure min/max
+ -champs montant avec bouton payer qui suit cette règle selon cette ordre
+ -filtre: mois et annee (ohatra oe salaire ao amin'ny fevrier 2024)
+ -date aloha ndrindra no payena voalohany(debut intervalle) (day/mois/annee)
+ -champs poste prioritaire(priorite alohan'ny date raha misy) iny poste iny no payerna voalohany
+ -date aloha ndrindra fona(rakoto 1er lou zay vo rakoto 3) suivant le poste prioritaire (day(ze kely ndrindra)/mois/annee)
+ zay vo olona ny poste tsy prioritaire
+
+rehefa vita de avoka eo ambany eo ny liste salaries ny montant de salaire sy paiement tamin'iny mois iny
+
+ny tena tsara ao amin'ny liste salaire

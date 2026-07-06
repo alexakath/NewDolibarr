@@ -5,6 +5,7 @@ import EmployeePaymentsPage from './pages/frontoffice/EmployeePaymentsPage'
 import SalaryPage from './pages/frontoffice/SalaryPage'
 import CreateSalaryPage from './pages/frontoffice/CreateSalaryPage'
 import BulkSalaryPage from './pages/frontoffice/BulkSalaryPage'
+import BulkSalaryByMonthPage from './pages/frontoffice/BulkSalaryByMonthPage'
 import LoginPage from './auth/LoginPage'
 import AuthGuard from './auth/AuthGuard'
 import DashboardPage from './pages/backoffice/DashboardPage'
@@ -26,6 +27,7 @@ function App() {
           <Route path="/salaries" element={<SalaryPage />} />
           <Route path="/salaries/create" element={<CreateSalaryPage />} />
           <Route path="/salaries/bulk" element={<BulkSalaryPage />} />
+          <Route path="/salaries/bulk-month" element={<BulkSalaryByMonthPage />} />
 
           {/* Backoffice (protégé) */}
           <Route path="/backoffice/dashboard" element={<AuthGuard><DashboardPage /></AuthGuard>} />

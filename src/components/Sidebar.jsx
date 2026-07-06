@@ -108,6 +108,7 @@ export function FrontSidebar() {
       <SideLink to="/salaries" icon={FiDollarSign}>Salaires</SideLink>
       <SideLink to="/salaries/create" icon={FiPlusCircle}>Gestion salaires</SideLink>
       <SideLink to="/salaries/bulk" icon={FiZap}>Salaires collectifs</SideLink>
+      <SideLink to="/salaries/bulk-month" icon={FiZap}>Salaires par mois</SideLink>
 
       <div style={{ flex: 1 }} />
 

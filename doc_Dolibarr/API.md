@@ -145,3 +145,7 @@ Module transversal, référencé par tous les modules RH (Salarié, Demandeur, A
 - Accès au Swagger Explorer confirmé : `http://dolibarr.localhost/api/index.php/explorer/`
 - Authentification testée : clé saisie dans le champ DOLAPIKEY du Swagger, bouton "Explore" → liste complète des tags affichée avec succès.
 - Détail des endpoints vérifié pour : `products`, `warehouses`, `stockmovements`, `holidays`, `expensereports`, `salaries`, `users`.
+
+
+
+

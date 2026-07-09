@@ -19,14 +19,30 @@ manambotra page vaovao mgenerer paiement dia mitovy filtre amin'ny filtre salair
 
 rehefa vita de avoka eo ambany eo ny liste salaries ny montant de salaire sy paiement tamin'iny mois iny
 
-ny tena tsara ao amin'ny liste salaire
+nouvelle page "paiement par mois" (otranle salaire par mois) avec:
+    - filtre: mois et année
+    - champs poste prioritaire
+    - champs montant (total ny tokony aloha entre les salariés)
+    - bouton payer
+    -liste salaries avec montant salaire, le montant paye et le reste à payer
+# ordre de priorité pour le paiement:
+1. le poste est prioritaire (le poste selectionner est prioritaire au paiement) -> à payer en premier
+2. date le plus ancien (reference date debut d'intervalle) -> jour/mois/annee 
+3. tant que le montant > salaire à payer de mandoa salaire fona jusqu'à montant = 0
+# ordre: 
+poste prioritaire -> date le plus ancien (01/02/2024 avant 12/02/2024)
+poste prioritaire -> poste non prioritaire(avec date le plus ancien)
+
+# ex:
+-poste prioritaire: technicien, montant à payer: 1600 avec Rasoabe et Ranjenja au poste technicien et Rakotobe au poste comptable:
+- Prioritaire: Rasoabe et Ranjenja
+- non prioritaire: Rakotobe
+-comparaison entre le debut d'intevalle de Rasoabe et Ranjenja: ze plus ancien no aloha voalohany 
+
+-> donc le 1600 diviser entre Rasoabe, Ranjenja et Rakotobe.
 
 
 
-ao amin'ny generer salaire misy mois et annee(salaire par jour et majoration jour feries):
-asina case a coche 2 oe samedi et dimanche dia rehefa cochena reo dia zay vo miasa samedi sy dimanche
-avec champs ray majoration 1 (samedi et dimanche)
-raha ohatra oe sady jour ferie ny samedi na dimanche de ny majoration ngeda no alaina
 
 
 dans la page "Salaires par mois" on ajoute 2 check-box(à cocher):

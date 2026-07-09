@@ -20,3 +20,27 @@ manambotra page vaovao mgenerer paiement dia mitovy filtre amin'ny filtre salair
 rehefa vita de avoka eo ambany eo ny liste salaries ny montant de salaire sy paiement tamin'iny mois iny
 
 ny tena tsara ao amin'ny liste salaire
+
+
+
+ao amin'ny generer salaire misy mois et annee(salaire par jour et majoration jour feries):
+asina case a coche 2 oe samedi et dimanche dia rehefa cochena reo dia zay vo miasa samedi sy dimanche
+avec champs ray majoration 1 (samedi et dimanche)
+raha ohatra oe sady jour ferie ny samedi na dimanche de ny majoration ngeda no alaina
+
+
+dans la page "Salaires par mois" on ajoute 2 check-box(à cocher):
+- 1 check-box pour samedi
+- 1 check-box pour dimanche
+- 1 champs de majoration en %
+
+règle de gestion:
+- quand un check-box est coché -> un champs de majoration ( en %) apparait
+- quand un check-box est coché -> ça signifie que l'employé travail le samedi/dimanche (ou les 2)
+- quand un check-box est non coché -> le champs de majoration ( en %) n'apparait pas
+- quand un check-box est non coché -> ça signifie que l'employé ne travail pas le samedi/dimanche (ou les 2)
+- si samedi/dimanche = jour ferié donc 2 majorations existantes:
+    - 1 majoration pour le jour férié
+    - 1 majoration pour samedi/dimanche
+    -> donc on prend celui qui à le plus grande majoration
+

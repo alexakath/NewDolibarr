@@ -59,7 +59,7 @@ export default function BulkSalaryByMonthPage() {
   const [loading, setLoading] = useState(true)
 
   const [filters, setFilters] = useState({ poste: '', genre: '', heuresMin: '', heuresMax: '' })
-  const [params, setParams] = useState({ mois: '', annee: '', salaireJour: '', majoration: '' })
+  const [params, setParams] = useState({ mois: '', annee: '', salaireJour: '', majoration: '', samedi: false, dimanche: false, majorationWeekend: ''})
 
   const [generating, setGenerating] = useState(false)
   const [report, setReport] = useState(null)
@@ -94,6 +94,8 @@ export default function BulkSalaryByMonthPage() {
     const holidaySet = new Set(joursFeries.map(j => j.date?.slice(0, 10)))
     const salaireJour = parseFloat(String(params.salaireJour).replace(',', '.')) || 0
     const majoration = parseFloat(String(params.majoration).replace(',', '.')) || 0
+    const majorationWeekend = parseFloat(String(params.majorationWeekend).replace(',', '.')) || 0
+    const majorationMaxWeekendFerie = Math.max(majoration, majorationWeekend)    
 
     return filtered.map((emp) => {
       const empSalaries = allSalaries.filter(s => Number(s.fk_user) === Number(emp.id))
@@ -124,16 +126,32 @@ export default function BulkSalaryByMonthPage() {
 
       if (!start) return { emp, done: true }
 
-      let normalDays = 0, holidayDays = 0
+      let normalDays = 0, holidayDays = 0, weekendDays = 0, weekendHolidayDays = 0
       for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
         const iso = toISO(d)
         if (covered.has(iso)) continue
-        if (holidaySet.has(iso)) holidayDays++
-        else normalDays++
-      }
-      const amount = normalDays * salaireJour + holidayDays * salaireJour * (1 + majoration / 100)
+        const isSaturday = d.getDay() === 6
+        const isSunday = d.getDay() === 0
+        const isHoliday = holidaySet.has(iso)
 
-      return { emp, done: false, datesp: toISO(start), dateep: toISO(end), normalDays, holidayDays, amount }
+        if (isSaturday || isSunday) {
+          const travaille = isSaturday ? params.samedi : params.dimanche
+          if (!travaille) continue
+          if (isHoliday) weekendHolidayDays++
+          else weekendDays++
+        } else if (isHoliday) {
+          holidayDays++
+        } else {
+          normalDays++
+        }
+      }
+      const amount =
+        normalDays * salaireJour +
+        holidayDays * salaireJour * (1 + majoration / 100) +
+        weekendDays * salaireJour * (1 + majorationWeekend / 100) +
+        weekendHolidayDays * salaireJour * (1 + majorationMaxWeekendFerie / 100)
+
+      return { emp, done: false, datesp: toISO(start), dateep: toISO(end), normalDays, holidayDays, weekendDays, weekendHolidayDays, amount }
     })
   }, [filtered, allSalaries, joursFeries, params])
 
@@ -281,6 +299,24 @@ export default function BulkSalaryByMonthPage() {
             </div>
           </div>
 
+          <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '1.25rem' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#94a3b8', fontSize: '0.85rem', cursor: 'pointer' }}>
+              <input type="checkbox" checked={params.samedi} onChange={e => updateParam('samedi', e.target.checked)} />
+              Travaille le samedi
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#94a3b8', fontSize: '0.85rem', cursor: 'pointer' }}>
+              <input type="checkbox" checked={params.dimanche} onChange={e => updateParam('dimanche', e.target.checked)} />
+              Travaille le dimanche
+            </label>
+          </div>
+
+          {(params.samedi || params.dimanche) && (
+            <div style={{ maxWidth: '220px', marginBottom: '1.25rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.3rem', color: '#64748b', fontSize: '0.8rem' }}>Majoration weekend (%)</label>
+              <input style={inputStyle} type="text" placeholder="Ex: 20" value={params.majorationWeekend} onChange={e => updateParam('majorationWeekend', e.target.value)} />
+            </div>
+          )}
+
           {params.mois && params.annee && (
             <>
               <p style={{ ...sectionLabel, marginBottom: '0.75rem' }}>Aperçu ({toGenerate.length} salaire{toGenerate.length !== 1 ? 's' : ''} à générer)</p>
@@ -291,6 +327,8 @@ export default function BulkSalaryByMonthPage() {
                     <th style={{ textAlign: 'left', padding: '0.5rem 0.75rem', color: '#4a5568', fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase' }}>Intervalle</th>
                     <th style={{ textAlign: 'left', padding: '0.5rem 0.75rem', color: '#4a5568', fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase' }}>Jours normaux</th>
                     <th style={{ textAlign: 'left', padding: '0.5rem 0.75rem', color: '#4a5568', fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase' }}>Jours fériés</th>
+                    <th style={{ textAlign: 'left', padding: '0.5rem 0.75rem', color: '#4a5568', fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase' }}>Jours weekend</th>
+                    <th style={{ textAlign: 'left', padding: '0.5rem 0.75rem', color: '#4a5568', fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase' }}>Weekend férié</th>
                     <th style={{ textAlign: 'left', padding: '0.5rem 0.75rem', color: '#4a5568', fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase' }}>Montant</th>
                   </tr>
                 </thead>
@@ -301,6 +339,8 @@ export default function BulkSalaryByMonthPage() {
                       <td style={{ padding: '0.5rem 0.75rem', color: '#94a3b8' }}>{p.done ? 'Déjà complet' : `${formatDate(p.datesp)} → ${formatDate(p.dateep)}`}</td>
                       <td style={{ padding: '0.5rem 0.75rem', color: '#94a3b8' }}>{p.done ? '-' : p.normalDays}</td>
                       <td style={{ padding: '0.5rem 0.75rem', color: '#94a3b8' }}>{p.done ? '-' : p.holidayDays}</td>
+                      <td style={{ padding: '0.5rem 0.75rem', color: '#94a3b8' }}>{p.done ? '-' : p.weekendDays}</td>
+                      <td style={{ padding: '0.5rem 0.75rem', color: '#94a3b8' }}>{p.done ? '-' : p.weekendHolidayDays}</td>
                       <td style={{ padding: '0.5rem 0.75rem', color: '#e2e8f0', fontWeight: 600 }}>{p.done ? '-' : p.amount.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}</td>
                     </tr>
                   ))}
@@ -367,7 +407,7 @@ export default function BulkSalaryByMonthPage() {
             </tbody>
           </table>
           <button
-            onClick={() => { setReport(null); setParams({ mois: '', annee: '', salaireJour: '', majoration: '' }) }}
+            onClick={() => { setReport(null); setParams({ mois: '', annee: '', salaireJour: '', majoration: '', samedi: false, dimanche: false, majorationWeekend: '' }) }}
             style={{ marginTop: '1rem', padding: '0.5rem 1rem', background: 'none', border: '1px solid #2d3748', borderRadius: '6px', color: '#94a3b8', fontSize: '0.85rem', cursor: 'pointer' }}
           >
             Nouvelle génération

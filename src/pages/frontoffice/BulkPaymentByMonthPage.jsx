@@ -159,6 +159,19 @@ export default function BulkPaymentByMonthPage() {
   const skippedCount = report?.filter(r => !r.success && r.skipped).length ?? 0
   const errorCount = report?.filter(r => !r.success && !r.skipped).length ?? 0
 
+  const totalsByEmployee = useMemo(() => {
+    if (!report) return []
+    const map = {}
+    for (const r of report) {
+      if (!r.success) continue
+      const empId = r.emp?.id
+      if (!map[empId]) map[empId] = { emp: r.emp, total: 0, count: 0 }
+      map[empId].total += r.montantPaye
+      map[empId].count++
+    }
+    return Object.values(map)
+  }, [report])
+
   if (loading) return <p>Chargement...</p>
 
   return (
@@ -267,6 +280,31 @@ export default function BulkPaymentByMonthPage() {
               )}
             </div>
           </div>
+
+          {totalsByEmployee.length > 0 && (
+            <>
+              <p style={{ ...sectionLabel, marginBottom: '0.75rem' }}>Total payé par employé</p>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid #1e1e2e' }}>
+                    <th style={{ textAlign: 'left', padding: '0.5rem 0.75rem', color: '#4a5568', fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase' }}>Salarié</th>
+                    <th style={{ textAlign: 'left', padding: '0.5rem 0.75rem', color: '#4a5568', fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase' }}>Nombre de paiements</th>
+                    <th style={{ textAlign: 'left', padding: '0.5rem 0.75rem', color: '#4a5568', fontWeight: 600, fontSize: '0.75rem', textTransform: 'uppercase' }}>Total payé</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {totalsByEmployee.map((t, idx) => (
+                    <tr key={t.emp?.id} style={{ borderBottom: idx < totalsByEmployee.length - 1 ? '1px solid #1a1a2a' : 'none' }}>
+                      <td style={{ padding: '0.5rem 0.75rem', color: '#e2e8f0', fontWeight: 500 }}>{t.emp?.lastname} {t.emp?.firstname}</td>
+                      <td style={{ padding: '0.5rem 0.75rem', color: '#94a3b8' }}>{t.count}</td>
+                      <td style={{ padding: '0.5rem 0.75rem', color: '#4ade80', fontWeight: 600 }}>{t.total.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
+          )}
+
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid #1e1e2e' }}>

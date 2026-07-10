@@ -23,6 +23,7 @@ export default function EmployeeListPage() {
   const [employees, setEmployees] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [search, setSearch] = useState({ q: '', genre: '', poste: '' })
 
   useEffect(() => {
     getUsers()
@@ -36,6 +37,17 @@ export default function EmployeeListPage() {
   if (loading) return <p>Chargement...</p>
   if (error) return <p style={{ color: 'var(--danger)' }}>Erreur : {error}</p>
 
+  const filtered = employees.filter((emp) => {
+    const q = search.q.trim().toLowerCase()
+    if (q) {
+      const text = `${emp.lastname} ${emp.firstname} ${emp.login} ${emp.ref_employee || emp.id}`.toLowerCase()
+      if (!text.includes(q)) return false
+    }
+    if (search.genre && emp.gender !== search.genre) return false
+    if (search.poste && !(emp.job || '').toLowerCase().includes(search.poste.toLowerCase())) return false
+    return true
+  })
+
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
@@ -44,8 +56,18 @@ export default function EmployeeListPage() {
           <h1 style={{ margin: 0 }}>Salariés</h1>
         </div>
         <div style={{ ...card, padding: '0.5rem 1rem', fontSize: '0.85rem', color: '#94a3b8' }}>
-          {employees.length} salarié{employees.length > 1 ? 's' : ''}
+          {filtered.length} salarié{filtered.length > 1 ? 's' : ''}
         </div>
+      </div>
+
+      <div style={{ marginBottom: '1rem', display: 'flex', gap: '0.5rem' }}>
+        <input placeholder="Recherche (nom, login, réf)" value={search.q} onChange={(e) => setSearch({ ...search, q: e.target.value })} />
+        <input placeholder="Poste" value={search.poste} onChange={(e) => setSearch({ ...search, poste: e.target.value })} />
+        <select value={search.genre} onChange={(e) => setSearch({ ...search, genre: e.target.value })}>
+          <option value="">Genre (tous)</option>
+          <option value="man">Homme</option>
+          <option value="woman">Femme</option>
+        </select>
       </div>
 
       <div style={card}>
@@ -62,7 +84,7 @@ export default function EmployeeListPage() {
             </tr>
           </thead>
           <tbody>
-            {employees.map((emp) => (
+            {filtered.map((emp) => (
               <tr key={emp.id}>
                 <td>
                   <img
